@@ -7,7 +7,7 @@ var req = http.request({host:'127.0.0.1',port:'8000',method:'POST'}, function(re
     body += chunk;
   });
   res.on( 'end', function () {
-    console.log( 'body');
+    console.log( body);
   });
 })
 req.write('123')
