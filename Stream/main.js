@@ -3,9 +3,9 @@
  */
 
 var fs = require('fs');
-var data = 'MonologueQing';
+var data = 'MonologueQing\n';
 
-var writerStream = fs.createWriteStream('Stream/output.txt');
+var writerStream = fs.createWriteStream('Stream/output1.txt', {flags: 'a'});
 
 writerStream.write(data, 'UTF8');
 
