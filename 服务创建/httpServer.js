@@ -3,6 +3,7 @@ var _request = require('request')
 
 var chunk = ''
 http.createServer(function (request, response) {
+  console.log(JSON.stringify(request.headers));
   request.on('data', function(chunk) {
     response.write('服务端收到信息')
     console.log(chunk.toString());

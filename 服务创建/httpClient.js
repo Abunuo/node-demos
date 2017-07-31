@@ -1,6 +1,6 @@
 var request = require('request')
 var http  = require('http')
-var req = http.request({host:'127.0.0.1',port:'8000',method:'POST'}, function(res) {
+var req = http.request({host:'127.0.0.1',port:'8000',method:'POST',headers: {'Content-Type': 'application/x-www-form-urlencoded'}}, function(res) {
   var body = '';
   res.setEncoding( 'utf-8' );
   res.on( 'data', function (chunk) {
