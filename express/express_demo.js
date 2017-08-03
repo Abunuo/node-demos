@@ -3,10 +3,20 @@ var app = express()
 var http = require('http')
 var request = require('request')
 
-app.get('/', function(req, res) {
+app.use(function log(req, res, next) {
+  req.lmq = 'lmq';
+  next()
+})
+app.get('/', function(req, res, next) {
    console.log('主页 GET 请求');
+   console.log(req.lmq);
    console.log(req.originalUrl);
-   res.send("HELLO HOME GET")
+   res.send("HELLO HOME GET");
+   next()
+})
+
+app.get('/', function(req, res, next) {
+  console.log(12);
 })
 
 app.get('/del_user', function(req, res) {
@@ -27,6 +37,11 @@ app.get('/ab*cd', function(req, res) {
    res.send('正则页面请求')
 })
 
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
 //创建服务
 http.createServer(app).listen(8081,'127.0.0.1', function(){
   console.log('server start!!');
@@ -41,6 +56,6 @@ var options = {
   url: '/'+uriStr
 }
 request(options, function(err, res, body){
-  console.log('---------');
+    console.log('---------');
     console.log(body);
 })
