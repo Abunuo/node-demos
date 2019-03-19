@@ -7,7 +7,13 @@
 var request = require("request");
 var http = require('http');
 var j = request.jar();
-
+var userList = [{
+    mobile: '15712880306',
+    password: '111111'
+}, {
+    mobile: '13501355743',
+    password: 'yu3456789'
+}]
 var options = {
     baseUrl: 'https://login.modian.com',
     method: 'POST',
