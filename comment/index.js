@@ -56,7 +56,7 @@ login_comment();
 
 //登录评论
 function login_comment(){
-    if(userList.length < 0) return;
+    if(userList.length == 0)return;
     options.formData.mobile = userList[0].mobile;
     options.formData.password = userList[0].password;
     request(options, function(err, httpRes, body){
@@ -71,18 +71,18 @@ function login_comment(){
                     console.log(body)
                     if(body.code == 1) {
                         commentCount++;
-                        if(commentCount > 1){
+                        if(commentCount > 4){
                             clearInterval(commentAjax);
                             logout(opt.headers.Cookie);
                             userList.shift();
                             console.log('\n\n\n');
-                            login_comment();
+                            userList.length > 0 ? login_comment() : console.log('评论结束');
                         }
                     } else {
                         console.error(err);
                     }
                 });
-            },1000*60*2)
+            },1000*60*3)
         } else {
             console.error(err);
         }
