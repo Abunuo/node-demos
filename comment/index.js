@@ -50,14 +50,17 @@ var opt = {
 }
 
 // 定时器
-setInterval(function(){
-    login_comment();
-},1000*60*60*24*7);
+// setInterval(function(){
+// },1000*60*60*24*7);
+login_comment();
 
 //登录评论
 function login_comment(){
+    if(userList.length < 0) return;
+    options.formData.mobile = userList[0].mobile;
+    options.formData.password = userList[0].password;
     request(options, function(err, httpRes, body){
-        if(body.status == 'OK'){
+        if(body && body.status == 'OK'){
             var commentCount = 1;
             console.log('用户'+options.formData.mobile+'已经登录');
             opt.headers.Cookie = getCookie(httpRes.headers);
@@ -68,15 +71,20 @@ function login_comment(){
                     console.log(body)
                     if(body.code == 1) {
                         commentCount++;
-                        if(commentCount > 4){
+                        if(commentCount > 1){
                             clearInterval(commentAjax);
                             logout(opt.headers.Cookie);
+                            userList.shift();
+                            console.log('\n\n\n');
+                            login_comment();
                         }
+                    } else {
+                        console.error(err);
                     }
                 });
-            },1000*60*5)
+            },1000*60*2)
         } else {
-            console.log(body);
+            console.error(err);
         }
     });
 }
