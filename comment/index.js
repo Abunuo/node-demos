@@ -61,34 +61,38 @@ function login_comment(){
     options.formData.password = userList[0].password;
     request(options, function(err, httpRes, body){
         if(body && body.status == 'OK'){
-            var commentCount = 1;
             console.log('用户'+options.formData.mobile+'已经登录');
-            opt.headers.Cookie = getCookie(httpRes.headers);
-            var commentAjax = setInterval(function(){
-                opt.formData.content = createContent();
-                request(opt, function(err, httpRes, body){
-                    console.log('\n第'+commentCount+'条：'+opt.formData.content)
-                    console.log(body)
-                    if(body.code == 1) {
-                        commentCount++;
-                        if(commentCount > 4){
-                            clearInterval(commentAjax);
-                            logout(opt.headers.Cookie);
-                            userList.shift();
-                            console.log('\n\n\n');
-                            userList.length > 0 ? login_comment() : console.log('评论结束');
-                        }
-                    } else {
-                        console.error(err);
-                    }
-                });
-            },1000*60*3)
+            comment(httpRes);
         } else {
             console.error(err);
         }
     });
 }
 
+//评论
+function comment(httpRes) {
+    var commentCount = 1;
+    opt.headers.Cookie = getCookie(httpRes.headers);
+    var commentAjax = setInterval(function(){
+        opt.formData.content = createContent();
+        request(opt, function(err, httpRes, body){
+            console.log('\n第'+commentCount+'条：'+opt.formData.content)
+            console.log(body)
+            if(body.code == 1) {
+                commentCount++;
+                if(commentCount > 4){
+                    clearInterval(commentAjax);
+                    logout(opt.headers.Cookie);
+                    userList.shift();
+                    console.log('\n\n\n');
+                    userList.length > 0 ? login_comment() : console.log('评论结束');
+                }
+            } else {
+                console.error(err);
+            }
+        });
+    },1000*60*3)
+}
 
 //退出
 function logout(cookie){
@@ -107,7 +111,7 @@ function getCookie(headers) {
         resCookie = '';
     cookies.forEach(function(item){
         var currCookie = item.split(';')[0];
-        if(currCookie.split('=')[0] == 'PHPSESSID') {
+        if(currCookie.split('=')[0] == 'PHPSESSID' && currCookie.split('=')[1] != 'deleted') {
              resCookie = currCookie;
         }
     })
