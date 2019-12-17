@@ -18,7 +18,7 @@ var options = {
     baseUrl: 'https://login.modian.com',
     method: 'POST',
     headers: {
-        'content-type': 'multipart/form-data; charset=utf-8',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
         'Cache-Control': 'no-cache',
     },
@@ -35,14 +35,14 @@ var opt = {
     baseUrl: 'https://zhongchou.modian.com',
     method: 'POST',
     headers: {
-        'content-type': 'multipart/form-data; charset=utf-8',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36',
         'Cache-Control': 'no-cache',
     },
     uri: '/dongtai/add_reply',
     json: true,
     formData: {
-        post_id: 25160,
+        post_id: 53300,
         content: '',
         attachment: '',
         sync_sina: ''
@@ -80,7 +80,7 @@ function comment(httpRes) {
             console.log(body)
             if(body.code == 1) {
                 commentCount++;
-                if(commentCount > 4){
+                if(commentCount > 5){
                     clearInterval(commentAjax);
                     logout(opt.headers.Cookie);
                     userList.shift();
