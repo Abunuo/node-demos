@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>多人单聊天室</title>
+        <meta name="viewport" content="width=device-width;initial-scale=1;minimum-scale=1;maximum-scale=1;user-scalable=no;">
+        <script src="./socket.io.js" charset="utf-8"></script>
+        <style media="screen">
+            * {
+                margin: 0;
+                padding: 0;
+                border: 0;
+            }
+            html, body, .chat-wrap {
+                width: 100%;
+                height: 100%;
+            }
+            .chat-wrap {
+                display: flex;
+                flex-direction: column;
+            }
+            h1 {
+                width: 100%;
+                height: 120px;
+                font-size: 44px;
+                line-height: 120px;
+                text-align: center;
+                box-shadow: 0 10px 20px 0 #eee;
+            }
+            .chat-con {
+                flex: 1;
+                overflow: scroll;
+                padding: 20px 30px 0;
+            }
+            .chat-con p {
+                width: 100%;
+                height: 50px;
+                margin-bottom: 10px;
+                font-size: 40px;
+                color: #222c37;
+            }
+            .chat-con p.left {
+                text-align: left;
+            }
+            .chat-con p.right {
+                text-align: right;
+            }
+            .bottom {
+                display: flex;
+                flex-direction: row;
+                width: 100%;
+                height: 120px;
+                font-size: 34px;
+                background: #fff;
+                box-shadow: 0 -10px 20px 0 #eee;
+            }
+            input {
+                flex: 1;
+                font-size: 40px;
+                padding: 0 30px;
+                box-sizing: border-box;
+            }
+            .sendBtn {
+                width: 250px;
+                height: 100%;
+                font-size: 38px;
+                color: #fff;
+                background: #00d6a6;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- 聊天界面，一开始隐藏，用户登录成功后再显示 -->
+        <div class="chat-wrap">
+            <h1>多人聊天室</h1>
+            <div class="chat-con"></div>
+            <div class="bottom">
+                <input type="text" id="sendtxt">
+                <button class="sendBtn">发送</button>
+            </div>
+        </div>
+       
+        <script type="text/javascript">
+            window.onload = function() {
+                const socket = io('ws://localhost:8081');  // 创建本地 websocked 服务
+                const userId = Math.ceil(Math.random()*10);  // 随机生成用户 Id
+                // 静默登录
+                console.log(userId);
+                socket.emit('login', {userId});
+                
+                
+                let sendBtn = document.querySelector('.sendBtn'),
+                    input = document.querySelector('#sendtxt'),
+                    chatContainer = document.querySelector('.chat-con');
+                
+                sendBtn.addEventListener('click', function(){
+                    sendMessage()
+                })
+                document.addEventListener('keydown', function(event) {
+                    if(event.keyCode == 13){
+                        sendMessage()
+                    }
+                })
+                
+                // 接收消息
+                socket.on('receiveMessage', function(data){
+                    console.log('接受客户端消息：', data);
+                    let htmlStr = chatContainer.innerHTML;
+                    if(data.userId == userId) {
+                        htmlStr += `<p class="right">${data.txt} : ${userId}号</p>`
+                    } else {
+                        htmlStr += `<p class="left">${data.userId}号 : ${data.txt}</p>`
+                    }
+                    chatContainer.innerHTML = htmlStr;
+                })
+                // 处理用户登录失败
+                socket.on('errorMessage', function(errMsg) {
+                    console.log(errMsg);
+                })
+                
+                function sendMessage() {
+                    let txt = input.value;
+                    txt != '' ? socket.emit('message', {
+                        userId,
+                        txt: txt
+                    }, function(code) {
+                        code == 1 && console.log('服务端已介绍到信息');
+                    }) && console.log(`用户 ${userId} 已发送消息：${txt}`) : '';
+                    
+                    input.value = '';  // 消息置空
+                }
+                
+            }
+        </script>
+    </body>
+</html>
