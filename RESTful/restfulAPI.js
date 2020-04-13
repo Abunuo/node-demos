@@ -1,17 +1,11 @@
+/*
+    RESTful: 用 URL定位资源，用 HTTP 动词（GET,POST,DELETE）描述操作。
+ */
+
 var express = require('express')
 var app = express()
 var fs = require('fs')
 var request = require('request')
-
-//获取用户列表
-app.get('/listUsers', function(req, res) {
-  fs.readFile(__dirname + '/user.json', 'utf-8', function(err, data) {
-    // console.log(data);
-    res.end(data)
-  })
-})
-
-
 var user = {
   'user4': {
     'name': 'p2p',
@@ -20,8 +14,21 @@ var user = {
     'id': 4
   }
 }
+
+app.use('*', function(req,res,next) {
+    console.log(req.headers);
+    next();
+})
+
+//获取用户列表
+app.get('/users', function(req, res) {
+    fs.readFile(__dirname + '/user.json', 'utf-8', function(err, data) {
+        // console.log(data);
+        res.end(data)
+    })
+})
 //添加用户信息
-app.get('/addUser', function(req, res) {
+app.post('/users', function(req, res) {
   fs.readFile(__dirname+'/user.json', 'utf8', function(err, data) {
     data = JSON.parse(data);
     data['user4'] = user['user4'];
@@ -33,7 +40,7 @@ app.get('/addUser', function(req, res) {
 })
 
 //获取用户详细信息
-app.get('/:id', function(req, res) {
+app.get('/user/:id', function(req, res) {
   fs.readFile( __dirname + "/" + "user.json", 'utf8', function (err, data) {
        data = JSON.parse( data );
        var user = data["user" + req.params.id]
@@ -46,7 +53,7 @@ app.get('/:id', function(req, res) {
 })
 
 //删除用户
-app.get('/deleteUser/:id', function(req, res) {
+app.delete('/user/:id', function(req, res) {
   fs.readFile( __dirname + "/" + "user.json", 'utf8', function (err, data) {
        data = JSON.parse( data );
        if(data["user" + req.params.id]){
@@ -74,8 +81,11 @@ var server = app.listen({port:8081, host: '127.0.0.1'}, function() {
 
 var options = {
   baseUrl: 'http://127.0.0.1:8081',
-  url: '/deleteUser/4',
-  method: 'GET'
+  url: '/users',
+  method: 'get',
+  headers: {
+      'Referer': 'http://www.baidu.com'
+  }
 }
 request(options, function(err, res, body) {
   if(err) return console.log(err);
