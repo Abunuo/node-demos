@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Test Facebook Login</title>
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId: '4330977133611110',
+          cookie: true,
+          xfbml: true,
+          version: 'v7.0'
+        });
+        FB.AppEvents.logPageView();
+      };
+      (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+          return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    </script>
+  </head>
+  <body>
+    <!-- 先调用登录，登陆完毕后在进入 checkLoginState -->
+    <fb:login-button 
+      scope="public_profile,email"
+      onlogin="checkLoginState();">
+    </fb:login-button>
+    
+    <!-- 直接进入 checkLoginState-->
+    <button type="button" name="button" style="margin-top: 20px;" onclick="checkLoginState()">点击登录 Facebook</button>
+    
+    <script type="text/javascript">
+      window.onload = function() {
+        window.checkLoginState = function() {
+          FB.getLoginStatus(function(response) {
+            statusChangeCallback(response);
+          });
+        }
+        
+        function statusChangeCallback(response) { // Called with the results from FB.getLoginStatus().
+          console.log('statusChangeCallback');
+          console.log(response); // The current login status of the person.
+          if (response.status === 'connected') { // Logged into your webpage and Facebook.
+            testAPI('localInfo');
+          } else { // Not logged into your webpage or we are unable to tell.
+            console.log('unLogin');
+            FB.login(function(response) {
+              if (response.authResponse) {
+                testAPI('loginInfo');
+              } else {
+                console.log('User cancelled login or did not fully authorize.');
+              }
+            });
+          }
+        }
+        
+        function testAPI(type) { // Testing Graph API after login.  See statusChangeCallback() for when this call is made.
+          console.log(`Information By ${type}, Welcome!  Fetching your information.... `);
+          FB.api('/me', function(res) {
+            console.log('api me', res);
+          })
+        }
+      }
+    </script>
+  </body>
+</html>
