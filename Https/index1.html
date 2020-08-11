@@ -37,6 +37,12 @@
     
     <script type="text/javascript">
       window.onload = function() {
+        window.addEventListener('message', function(event){
+          if(event.data.type === 'faceBookLogin') {
+            checkLoginState();
+          }
+        }, false)
+        
         window.checkLoginState = function() {
           FB.getLoginStatus(function(response) {
             statusChangeCallback(response);
@@ -44,20 +50,29 @@
         }
         
         function statusChangeCallback(response) { // Called with the results from FB.getLoginStatus().
-          console.log('statusChangeCallback');
-          console.log(response); // The current login status of the person.
           if (response.status === 'connected') { // Logged into your webpage and Facebook.
-            testAPI('localInfo');
+            // testAPI('localInfo');
+            postParent(response);
           } else { // Not logged into your webpage or we are unable to tell.
             console.log('unLogin');
             FB.login(function(response) {
               if (response.authResponse) {
-                testAPI('loginInfo');
+                // testAPI('loginInfo');
+                console.log(response);
+                postParent(response);
               } else {
                 console.log('User cancelled login or did not fully authorize.');
               }
             });
           }
+        }
+        
+        function postParent(data) {
+          console.log('iframe',data);
+          parent.postMessage({
+            type: 'faceBookLogin',
+            data
+          }, '*');
         }
         
         function testAPI(type) { // Testing Graph API after login.  See statusChangeCallback() for when this call is made.
